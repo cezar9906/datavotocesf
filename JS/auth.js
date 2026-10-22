@@ -12,19 +12,27 @@ export function ehAdmin(user) {
 export function protegerRota(papelExigido, aoAutorizar) {
   onAuthStateChanged(auth, (user) => {
     if (!user) { 
+      // Se não tem ninguém logado, vai pro login
       window.location.href = "login.html"; 
       return; 
     }
     
-    const papel = ehAdmin(user) ? "admin" : "user";
+    const isAdmin = ehAdmin(user);
     
-    if (papelExigido === "admin" && papel !== "admin") {
-      alert("Acesso restrito a administradores.");
-      window.location.href = "user.html";
+    if (papelExigido === "admin" && !isAdmin) {
+      // Tentou entrar no admin sem ser admin? Volta pro user.
+      window.location.replace("user.html");
+      return;
+    }
+
+    if (papelExigido === "user" && isAdmin) {
+      // Admin logado tentando ver a tela de user? Manda pro admin.
+      window.location.replace("admin.html");
       return;
     }
     
-    aoAutorizar(user, papel);
+    // Se passou pelas regras, autoriza!
+    aoAutorizar(user, isAdmin ? "admin" : "user");
   });
 }
 
