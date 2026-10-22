@@ -1,127 +1,145 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DataVotoCesf — Pesquisa Oficial</title>
-  <link rel="stylesheet" href="CSS/style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DataVotoCesf - Pesquisa Campo Largo</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="header">
-    <h1>DataVotoCesf</h1>
-    <p>Pesquisa Socioeconômica e Eleitoral — Campo Largo / PR</p>
-    <span class="badge">100% Anônimo</span>
-  </header>
+  <div class="container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+      <span style="font-size: 0.8rem; font-weight: bold; color: #718096;">DataVotoCesf</span>
+      <!-- Botão para ir para a tela de admin -->
+      <a href="admin.html" style="background: #edf2f7; color: #2b6cb0; text-decoration: none; padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; font-weight: bold;">Painel Admin 🔒</a>
+    </div>
 
-  <main class="container">
-    <form id="form-pesquisa" novalidate>
-      <div class="secao-form">
-        <h2>1. Seu Perfil</h2>
-        <label for="idade">Qual a sua idade?</label>
-        <input type="number" id="idade" name="idade" min="16" max="120" placeholder="Ex: 25" required />
-        <label for="genero">Gênero</label>
-        <select id="genero" name="genero" required>
+    <h1>Pesquisa Eleitoral DataVotoCesf</h1>
+    <p style="text-align: center; color: #666; margin-bottom: 20px; font-size: 0.85rem;">
+      Pesquisa socioeconômica e eleitoral anônima — Colégio Sagrada Família / Campo Largo (PR).
+    </p>
+
+    <form id="pollForm">
+      <label>Faixa Etária:
+        <select id="faixaEtaria" required>
           <option value="">Selecione...</option>
-          <option value="Feminino">Feminino</option>
-          <option value="Masculino">Masculino</option>
-          <option value="Outro">Outro / Prefiro não informar</option>
+          <option value="16-17">16 a 17 anos</option>
+          <option value="18-29">18 a 29 anos</option>
+          <option value="30-49">30 a 49 anos</option>
+          <option value="50-64">50 a 64 anos</option>
+          <option value="65+">65 anos ou mais</option>
         </select>
-        <label for="bairro">Em qual bairro de Campo Largo você mora?</label>
-        <select id="bairro" name="bairro" required>
+      </label>
+
+      <label>Região / Bairro de Campo Largo:
+        <select id="bairro" required>
           <option value="">Selecione seu bairro...</option>
           <option value="Centro">Centro</option>
           <option value="Águas Claras">Águas Claras</option>
-          <option value="Bateias">Bateias</option>
-          <option value="Cercadinho">Cercadinho</option>
-          <option value="Ferraria">Ferraria</option>
-          <option value="Itaqui">Itaqui</option>
-          <option value="Jardim Amélia">Jardim Amélia</option>
-          <option value="Ouro Verde">Ouro Verde</option>
+          <option value="Aparecida">Aparecida</option>
+          <option value="Botiatuva">Botiatuva</option>
+          <option value="Ferrari">Ferrari</option>
+          <option value="Itaboa">Itaboa</option>
+          <option value="Jardim Melpomeni">Jardim Melpomeni</option>
           <option value="Rondinha">Rondinha</option>
-          <option value="Santa Cruz">Santa Cruz</option>
-          <option value="São Silvestre">São Silvestre</option>
-          <option value="Vila Nova">Vila Nova</option>
-          <option value="Outro">Outro</option>
+          <option value="Vila Itaqui">Vila Itaqui</option>
+          <option value="Zona Rural / Interior">Zona Rural / Interior</option>
+          <option value="Outro">Outro bairro</option>
         </select>
-      </div>
+      </label>
 
-      <div class="secao-form">
-        <h2>2. Dados Socioeconômicos</h2>
-        <label for="escolaridade">Escolaridade</label>
-        <select id="escolaridade" name="escolaridade" required>
+      <label>Ocupação / Rotina Atual:
+        <select id="rotina" required>
           <option value="">Selecione...</option>
-          <option value="Fundamental">Ensino Fundamental</option>
-          <option value="Médio">Ensino Médio</option>
-          <option value="Superior">Ensino Superior</option>
-          <option value="Pós-graduação">Pós-graduação</option>
+          <option value="Apenas Estuda">Apenas Estuda</option>
+          <option value="Apenas Trabalha">Apenas Trabalha</option>
+          <option value="Estuda e Trabalha">Estuda e Trabalha</option>
+          <option value="Desempregado / Procurando">Desempregado(a)</option>
+          <option value="Aposentado / Pensionista">Aposentado(a) / Pensionista</option>
         </select>
-        <label for="renda">Renda familiar mensal</label>
-        <select id="renda" name="renda" required>
-          <option value="">Selecione...</option>
-          <option value="Até 1 SM">Até 1 salário mínimo (até R$ 1.412)</option>
-          <option value="1 a 2 SM">De 1 a 2 salários mínimos</option>
-          <option value="2 a 5 SM">De 2 a 5 salários mínimos</option>
-          <option value="5 a 10 SM">De 5 a 10 salários mínimos</option>
-          <option value="Mais de 10 SM">Mais de 10 salários mínimos</option>
-        </select>
-        <div class="linha-dupla">
-          <div>
-            <label for="moradores">Moradores na casa</label>
-            <input type="number" id="moradores" name="moradores" min="1" max="20" required />
-          </div>
-          <div>
-            <label for="trabalhadores">Pessoas que trabalham</label>
-            <input type="number" id="trabalhadores" name="trabalhadores" min="0" max="20" required />
-          </div>
-        </div>
-      </div>
+      </label>
 
-      <div class="secao-form">
-        <h2>3. Intenção de Voto</h2>
-        <label for="intencaoVoto">Se a eleição para Prefeito de Campo Largo fosse hoje, em quem você votaria?</label>
-        <select id="intencaoVoto" name="intencaoVoto" required>
+      <label>Renda Familiar Mensal:
+        <select id="renda" required>
           <option value="">Selecione...</option>
-          <option value="Maurício Rivabem">Maurício Rivabem</option>
-          <option value="Marcelo Puppi">Marcelo Puppi</option>
-          <option value="Rui Furlan">Rui Furlan</option>
-          <option value="Vilmar Basso">Vilmar Basso</option>
-          <option value="Branco/Nulo">Branco / Nulo</option>
-          <option value="Indeciso">Ainda não sei / Indeciso</option>
+          <option value="Até 1 salário mínimo">Até 1 salário mínimo</option>
+          <option value="De 1 a 3 salários mínimos">De 1 a 3 salários mínimos</option>
+          <option value="De 3 a 5 salários mínimos">De 3 a 5 salários mínimos</option>
+          <option value="Mais de 5 salários mínimos">Mais de 5 salários mínimos</option>
+          <option value="Preferiu não informar">Preferiu não informar</option>
         </select>
-        <label for="certezaVoto">O quão decidido você está sobre esse voto?</label>
-        <select id="certezaVoto" name="certezaVoto" required>
-          <option value="">Selecione...</option>
-          <option value="Totalmente decidido">Totalmente decidido(a)</option>
-          <option value="Parcialmente decidido">Parcialmente decidido(a)</option>
-          <option value="Ainda posso mudar">Ainda posso mudar</option>
-        </select>
-        <fieldset>
-          <legend>Quais são as pautas prioritárias? (Marque até 3)</legend>
-          <div class="grid-checkboxes">
-            <label><input type="checkbox" name="pautas" value="Saúde" /> Saúde</label>
-            <label><input type="checkbox" name="pautas" value="Educação" /> Educação</label>
-            <label><input type="checkbox" name="pautas" value="Segurança" /> Segurança Pública</label>
-            <label><input type="checkbox" name="pautas" value="Emprego" /> Geração de Emprego</label>
-            <label><input type="checkbox" name="pautas" value="Infraestrutura" /> Infraestrutura</label>
-            <label><input type="checkbox" name="pautas" value="Transporte" /> Transporte Público</label>
-            <label><input type="checkbox" name="pautas" value="Meio Ambiente" /> Meio Ambiente</label>
-            <label><input type="checkbox" name="pautas" value="Cultura" /> Cultura e Lazer</label>
-          </div>
-        </fieldset>
-      </div>
+      </label>
 
-      <button type="submit" id="btn-enviar">Enviar Minhas Respostas</button>
-      <p id="mensagem" role="status" aria-live="polite"></p>
+      <label>Nº de Moradores na Residência:
+        <input type="number" id="moradores" min="1" max="20" placeholder="Ex: 4" required>
+      </label>
+
+      <label>Nº de Pessoas que Trabalham na Residência:
+        <input type="number" id="trabalhadores" min="0" max="20" placeholder="Ex: 2" required>
+      </label>
+
+      <label>Intenção de Voto para Prefeito:
+        <select id="candidatoPrefeito" required>
+          <option value="">Em quem você votaria?</option>
+          <option value="Mauricio Rivabem">Mauricio Rivabem (PSD)</option>
+          <option value="Christiano Puppi">Christiano Puppi (PP)</option>
+          <option value="Jean Naiser">Jean Naiser (PMB)</option>
+          <option value="Edson Basso">Edson Basso (PSB)</option>
+          <option value="Lino Petry">Lino Petry (PV)</option>
+          <option value="Branco / Nulo">Branco / Nulo</option>
+          <option value="Indeciso / Não sei">Indeciso / Não sei</option>
+        </select>
+      </label>
+
+      <label>Rejeição (Em quem você NUNCA votaria):
+        <select id="rejeicaoPrefeito" required>
+          <option value="">Selecione...</option>
+          <option value="Mauricio Rivabem">Mauricio Rivabem (PSD)</option>
+          <option value="Christiano Puppi">Christiano Puppi (PP)</option>
+          <option value="Jean Naiser">Jean Naiser (PMB)</option>
+          <option value="Edson Basso">Edson Basso (PSB)</option>
+          <option value="Lino Petry">Lino Petry (PV)</option>
+          <option value="Rejeito Todos">Rejeito Todos</option>
+          <option value="Não Rejeito Nenhum">Não Rejeito Nenhum</option>
+        </select>
+      </label>
+
+      <label>Certeza do Voto:
+        <select id="certezaVoto" required>
+          <option value="">Selecione...</option>
+          <option value="Totalmente decidido">Totalmente decidido</option>
+          <option value="Certo, mas pode mudar">Certo, mas pode mudar</option>
+          <option value="Indeciso">Indeciso</option>
+        </select>
+      </label>
+
+      <label>Avaliação da Atual Gestão da Prefeitura:
+        <select id="avaliacaoGestao" required>
+          <option value="">Selecione...</option>
+          <option value="Ótima / Boa">Ótima / Boa</option>
+          <option value="Regular">Regular</option>
+          <option value="Ruim / Péssima">Ruim / Péssima</option>
+          <option value="Não sei avaliar">Não sei avaliar</option>
+        </select>
+      </label>
+
+      <label>Pauta Prioritária para Campo Largo:
+        <select id="pauta" required>
+          <option value="">Qual área precisa de mais atenção?</option>
+          <option value="Saúde (Postos e Hospitais)">Saúde e Atendimento Médico</option>
+          <option value="Educação e Creches">Educação e Vagas em Creches</option>
+          <option value="Segurança Pública">Segurança e Policiamento</option>
+          <option value="Transporte Público">Transporte Público</option>
+          <option value="Pavimentação e Asfalto">Pavimentação e Asfalto</option>
+          <option value="Geração de Empregos">Geração de Empregos</option>
+          <option value="Lazer e Esporte">Lazer, Cultura e Esporte</option>
+        </select>
+      </label>
+
+      <button type="submit">Enviar Resposta Anônima</button>
     </form>
-  </main>
+  </div>
 
-  <footer class="footer">
-    <p>Projeto Integrado de Backend • Colégio Sagrada Família</p>
-    <p style="margin-top: 10px;">
-      <a href="admin.html" style="color: #6b7280; text-decoration: none; font-size: 0.8rem;">Acesso Restrito (Admin)</a>
-    </p>
-  </footer>
-
-  <script type="module" src="JS/script.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>

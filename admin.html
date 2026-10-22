@@ -1,57 +1,235 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DataVotoCesf — Painel Admin</title>
-  <link rel="stylesheet" href="CSS/style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DataVotoCesf - Painel Administrativo</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .admin-container {
+      max-width: 900px;
+      width: 100%;
+    }
+
+    .login-box {
+      max-width: 400px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f7fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+
+    .stat-card {
+      background: #edf2f7;
+      border-left: 5px solid #2b6cb0;
+      padding: 15px;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .stat-card h4 {
+      font-size: 0.85rem;
+      color: #4a5568;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+    }
+
+    .stat-card p {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #1a365d;
+      margin: 0;
+    }
+
+    .chart-box {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 25px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .chart-box h3 {
+      font-size: 1.1rem;
+      color: #2d3748;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-  <header class="header">
-    <h1>Painel Administrativo 👑</h1>
-    <p>DataVotoCesf — Análise consolidada</p>
-    <div class="user-bar">
-      <a href="index.html" style="color: white; text-decoration: underline;">← Voltar para a Pesquisa</a>
+  <div class="container admin-container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+      <a href="index.html" style="color: #2b6cb0; text-decoration: none; font-size: 0.85rem; font-weight: bold;">← Voltar ao Formulário</a>
+      <span style="font-size: 0.8rem; font-weight: bold; color: #718096;">Área Restrita</span>
     </div>
-  </header>
 
-  <main class="container">
-    <!-- TELA DE SENHA -->
-    <section id="tela-senha" class="card" style="max-width: 400px; margin: 2rem auto; text-align: center;">
-      <h2>Acesso Restrito</h2>
-      <p style="margin-bottom: 1rem; color: #6b7280;">Digite a senha de administrador para visualizar os dados.</p>
-      <input type="password" id="senha-admin" placeholder="Digite a senha..." style="margin-bottom: 1rem;" />
-      <button id="btn-entrar-admin">Acessar Painel</button>
-      <p id="msg-senha" class="msg-auth" style="margin-top: 1rem;"></p>
-    </section>
+    <h1>Painel Administrativo DataVotoCesf</h1>
 
-    <!-- PAINEL DE DADOS -->
-    <section id="painel" hidden>
-      <div class="acoes-admin">
-        <button id="btn-atualizar">🔄 Atualizar Dados</button>
-        <button id="btn-exportar">⬇️ Exportar CSV</button>
+    <!-- TELA DE MINI LOGIN -->
+    <div id="loginArea" class="login-box">
+      <h3 style="text-align: center; margin-bottom: 15px; color: #2d3748;">Acesso Restrito</h3>
+      <label>Senha do Administrador:
+        <input type="password" id="adminPassword" placeholder="Digite a senha (ex: 123456)">
+      </label>
+      <button id="btnLogin" style="margin-top: 15px;">Entrar no Painel</button>
+    </div>
+
+    <!-- TELA DAS ESTATÍSTICAS E GRÁFICOS (SÓ APARECE APÓS O LOGIN) -->
+    <div id="dashboard" style="display: none;">
+      <h2>Estatísticas Gerais</h2>
+      
+      <!-- CARDS DE MÉTRICAS -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h4>Total de Respostas</h4>
+          <p id="totalRespostas">0</p>
+        </div>
+        <div class="stat-card">
+          <h4>Média Moradores/Residência</h4>
+          <p id="mediaMoradores">0</p>
+        </div>
+        <div class="stat-card">
+          <h4>Média Trabalhadores/Residência</h4>
+          <p id="mediaTrabalhadores">0</p>
+        </div>
       </div>
 
-      <div class="metricas">
-        <div class="card metrica"><span class="metrica-label">Total de respostas</span><strong id="total-respostas">0</strong></div>
-        <div class="card metrica"><span class="metrica-label">Média de moradores</span><strong id="media-moradores">0</strong></div>
-        <div class="card metrica"><span class="metrica-label">Média de idade</span><strong id="media-idade">0</strong></div>
+      <hr style="margin: 30px 0; border: 0; border-top: 1px solid #e2e8f0;">
+
+      <h2>Gráficos de Desempenho</h2>
+
+      <div class="chart-box">
+        <h3>Intenção de Voto para Prefeito em Campo Largo</h3>
+        <canvas id="chartIntencaoVoto"></canvas>
       </div>
 
-      <div class="card"><h3>Intenção de Voto</h3><canvas id="grafico-votos"></canvas></div>
-      <div class="card"><h3>Bairros</h3><canvas id="grafico-bairro"></canvas></div>
-      <div class="card"><h3>Escolaridade</h3><canvas id="grafico-escolaridade"></canvas></div>
-      <div class="card"><h3>Pautas</h3><canvas id="grafico-pautas"></canvas></div>
-      <div class="card"><h3>Gênero</h3><canvas id="grafico-genero"></canvas></div>
-      <div class="card"><h3>Renda</h3><canvas id="grafico-renda"></canvas></div>
-    </section>
-  </main>
+      <div class="chart-box">
+        <h3>Pautas e Serviços Prioritários</h3>
+        <canvas id="chartPautas"></canvas>
+      </div>
 
-  <footer class="footer">
-    <p>Projeto Integrado de Backend • Colégio Sagrada Família</p>
-  </footer>
+      <div class="chart-box">
+        <h3>Nível de Certeza do Voto</h3>
+        <canvas id="chartCerteza"></canvas>
+      </div>
+    </div>
+  </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <script type="module" src="JS/admin.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyALY4mWlgws1KZhtQYbjaf0ApsCMCMrIzs",
+      authDomain: "datavotocesf-b081a.firebaseapp.com",
+      projectId: "datavotocesf-b081a",
+      storageBucket: "datavotocesf-b081a.firebasestorage.app",
+      messagingSenderId: "694506317356",
+      appId: "1:694506317356:web:a9e4f1ffd0db499c43d389",
+      measurementId: "G-BHJL9XJL3V"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Lógica do Mini Login
+    document.getElementById("btnLogin").addEventListener("click", async () => {
+      const senha = document.getElementById("adminPassword").value;
+      if (senha === "123456") {
+        document.getElementById("loginArea").style.display = "none";
+        document.getElementById("dashboard").style.display = "block";
+        await carregarEstatisticas();
+      } else {
+        alert("Senha incorreta! Tente novamente.");
+      }
+    });
+
+    async function carregarEstatisticas() {
+      const querySnapshot = await getDocs(collection(db, "datavoto_cesf_respostas"));
+      
+      let total = 0;
+      let somaMoradores = 0;
+      let somaTrabalhadores = 0;
+
+      let votosMap = {};
+      let pautasMap = {};
+      let certezaMap = {};
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        total++;
+        
+        somaMoradores += Number(data.moradores || 0);
+        somaTrabalhadores += Number(data.trabalhadores || 0);
+
+        if (data.candidatoPrefeito) {
+          votosMap[data.candidatoPrefeito] = (votosMap[data.candidatoPrefeito] || 0) + 1;
+        }
+
+        if (data.pauta) {
+          pautasMap[data.pauta] = (pautasMap[data.pauta] || 0) + 1;
+        }
+
+        if (data.certezaVoto) {
+          certezaMap[data.certezaVoto] = (certezaMap[data.certezaVoto] || 0) + 1;
+        }
+      });
+
+      document.getElementById("totalRespostas").innerText = total;
+      document.getElementById("mediaMoradores").innerText = total > 0 ? (somaMoradores / total).toFixed(1) : "0";
+      document.getElementById("mediaTrabalhadores").innerText = total > 0 ? (somaTrabalhadores / total).toFixed(1) : "0";
+
+      // 1. Gráfico Intenção de Voto
+      new Chart(document.getElementById('chartIntencaoVoto').getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: Object.keys(votosMap),
+          datasets: [{
+            label: 'Nº de Votos',
+            data: Object.values(votosMap),
+            backgroundColor: '#2b6cb0'
+          }]
+        },
+        options: { responsive: true }
+      });
+
+      // 2. Gráfico Pautas
+      new Chart(document.getElementById('chartPautas').getContext('2d'), {
+        type: 'pie',
+        data: {
+          labels: Object.keys(pautasMap),
+          datasets: [{
+            data: Object.values(pautasMap),
+            backgroundColor: ['#319795', '#d69e2e', '#e53e3e', '#805ad5', '#3182ce', '#dd6b20']
+          }]
+        },
+        options: { responsive: true }
+      });
+
+      // 3. Gráfico Certeza do Voto
+      new Chart(document.getElementById('chartCerteza').getContext('2d'), {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(certezaMap),
+          datasets: [{
+            data: Object.values(certezaMap),
+            backgroundColor: ['#38a169', '#d69e2e', '#e53e3e']
+          }]
+        },
+        options: { responsive: true }
+      });
+    }
+  </script>
 </body>
 </html>
