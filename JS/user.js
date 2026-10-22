@@ -1,8 +1,23 @@
-import { db } from "./firebase-config.js";
-import { protegerRota, fazerLogout, exibirEmailNoHeader } from "./auth.js";
+import { db, auth } from "./firebase-config.js";
+import { fazerLogout, exibirEmailNoHeader, ehAdmin } from "./auth.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
-protegerRota("user", async (user) => {
+// Em vez de usar protegerRota("admin"), usamos a verificação direta do Firebase
+onAuthStateChanged(auth, async (user) => {
+  // 1. Se não estiver logado, manda pro login
+  if (!user) {
+    window.location.replace("login.html");
+    return;
+  }
+
+  // 2. Se for o admin tentando acessar a tela de user, manda ele pro admin
+  if (ehAdmin(user)) {
+    window.location.replace("admin.html");
+    return;
+  }
+
+  // 3. Se for um usuário comum, libera a tela!
   document.getElementById("painel").hidden = false;
   exibirEmailNoHeader(user);
   document.getElementById("btn-logout").addEventListener("click", fazerLogout);
@@ -23,7 +38,7 @@ protegerRota("user", async (user) => {
     criarGrafico("grafico-votos", votos, "pie");
     criarGrafico("grafico-pautas", pautas, "bar");
   } catch (erro) {
-    console.error(erro);
+    console.error("Erro ao carregar dados:", erro);
   }
 });
 
