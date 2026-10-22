@@ -15,4 +15,4 @@ export async function fazerLogout() {
 export function exibirEmailNoHeader(user) {
   const el = document.getElementById("user-email");
   if (el) el.textContent = user.email || "Usuário";
-}
+}git 

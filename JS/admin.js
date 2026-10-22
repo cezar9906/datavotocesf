@@ -1,34 +1,36 @@
-import { db, auth } from "./firebase-config.js";
-import { fazerLogout, exibirEmailNoHeader, ehAdmin } from "./auth.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
+import { db } from "./firebase-config.js";
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
 const COLECAO = "datavoto_cesf_respostas";
+const SENHA_ADMIN = "xuxuabrobrinha";
 let cacheDocs = [];
 
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    window.location.replace("login.html");
-    return;
-  }
+// Lógica da tela de senha
+const telaSenha = document.getElementById("tela-senha");
+const painel = document.getElementById("painel");
+const inputSenha = document.getElementById("senha-admin");
+const btnEntrar = document.getElementById("btn-entrar-admin");
+const msgSenha = document.getElementById("msg-senha");
 
-  // Se NÃO for admin, expulsa para a tela de user
-  if (!ehAdmin(user)) {
-    alert("Acesso restrito a administradores.");
-    window.location.replace("user.html");
-    return;
+btnEntrar.addEventListener("click", () => {
+  if (inputSenha.value === SENHA_ADMIN) {
+    telaSenha.hidden = true;
+    painel.hidden = false;
+    carregarPainel();
+  } else {
+    msgSenha.textContent = "Senha incorreta. Tente novamente.";
+    msgSenha.className = "msg-auth erro";
   }
-
-  // Se for admin, carrega o painel
-  document.getElementById("painel").hidden = false;
-  exibirEmailNoHeader(user);
-  
-  document.getElementById("btn-logout").addEventListener("click", fazerLogout);
-  document.getElementById("btn-atualizar").addEventListener("click", () => carregarPainel());
-  document.getElementById("btn-exportar").addEventListener("click", exportarCSV);
-  
-  carregarPainel();
 });
+
+// Permite apertar Enter na senha
+inputSenha.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") btnEntrar.click();
+});
+
+// Lógica do Painel (Gráficos)
+document.getElementById("btn-atualizar").addEventListener("click", carregarPainel);
+document.getElementById("btn-exportar").addEventListener("click", exportarCSV);
 
 async function carregarPainel() {
   try {
@@ -36,8 +38,7 @@ async function carregarPainel() {
     cacheDocs = snap.docs.map((d) => d.data());
     renderizar();
   } catch (erro) {
-    console.error(erro);
-    alert("Erro ao carregar dados.");
+    console.error("Erro ao carregar painel:", erro);
   }
 }
 
@@ -88,7 +89,7 @@ function criarGrafico(id, dadosMap, tipo) {
 }
 
 function exportarCSV() {
-  if (!cacheDocs.length) return alert("Nenhum dado.");
+  if (!cacheDocs.length) return alert("Nenhum dado para exportar.");
   const linhas = cacheDocs.map((r) => [r.idade, r.genero, r.bairro, r.escolaridade, r.renda, r.moradores, r.trabalhadores, r.intencaoVoto, r.certezaVoto, `"${(r.pautas || []).join("; ")}"`].join(","));
   const csv = ["idade,genero,bairro,escolaridade,renda,moradores,trabalhadores,intencaoVoto,certezaVoto,pautas", ...linhas].join("\n");
   
