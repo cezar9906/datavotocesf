@@ -1,11 +1,25 @@
-import { db } from "./firebase-config.js";
-import { protegerRota, fazerLogout, exibirEmailNoHeader } from "./auth.js";
+import { db, auth } from "./firebase-config.js";
+import { fazerLogout, exibirEmailNoHeader, ehAdmin } from "./auth.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
 const COLECAO = "datavoto_cesf_respostas";
 let cacheDocs = [];
 
-protegerRota("admin", (user) => {
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    window.location.replace("login.html");
+    return;
+  }
+
+  // Se NÃO for admin, expulsa para a tela de user
+  if (!ehAdmin(user)) {
+    alert("Acesso restrito a administradores.");
+    window.location.replace("user.html");
+    return;
+  }
+
+  // Se for admin, carrega o painel
   document.getElementById("painel").hidden = false;
   exibirEmailNoHeader(user);
   

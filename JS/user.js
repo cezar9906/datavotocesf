@@ -3,21 +3,20 @@ import { fazerLogout, exibirEmailNoHeader, ehAdmin } from "./auth.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
-// Em vez de usar protegerRota("admin"), usamos a verificação direta do Firebase
 onAuthStateChanged(auth, async (user) => {
-  // 1. Se não estiver logado, manda pro login
+  // Se não está logado, vai pro login
   if (!user) {
     window.location.replace("login.html");
     return;
   }
 
-  // 2. Se for o admin tentando acessar a tela de user, manda ele pro admin
+  // Se for o admin, manda pro admin
   if (ehAdmin(user)) {
     window.location.replace("admin.html");
     return;
   }
 
-  // 3. Se for um usuário comum, libera a tela!
+  // Se for usuário normal, libera a tela!
   document.getElementById("painel").hidden = false;
   exibirEmailNoHeader(user);
   document.getElementById("btn-logout").addEventListener("click", fazerLogout);
