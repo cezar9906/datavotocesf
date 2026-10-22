@@ -1,12 +1,10 @@
 import { auth } from "./firebase-config.js";
-import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
+import { signOut } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 
-const EMAIL_ADMIN = "useradmin@goku.com"; 
-
-export async function ehAdmin(user) {
+export function ehAdmin(user) {
   if (!user || !user.email) return false;
-  // Compara as strings exatas
-  return user.email.toLowerCase() === EMAIL_ADMIN.toLowerCase();
+  // Retorna true APENAS se o e-mail for exatamente este:
+  return user.email.toLowerCase() === "useradmin@goku.com";
 }
 
 export async function fazerLogout() {

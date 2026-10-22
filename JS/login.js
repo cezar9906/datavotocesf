@@ -3,13 +3,22 @@ import { ehAdmin } from "./auth.js";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  onAuthStateChanged
+  onAuthStateChanged,
+  signOut
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 
-// 1. Verifica se já está logado
-onAuthStateChanged(auth, (user) => {
+// 1. LIMPEZA INICIAL: Remove sessões antigas para não dar conflito
+signOut(auth).then(() => {
+  console.log("Sessão limpa para novo login.");
+});
+
+// 2. Redirecionamento seguro após login/cadastro
+onAuthStateChanged(auth, async (user) => {
   if (user) {
-    if (ehAdmin(user)) {
+    // Espera a verificação do admin terminar
+    const isAdmin = await ehAdmin(user);
+    
+    if (isAdmin) {
       window.location.replace("admin.html");
     } else {
       window.location.replace("user.html");
@@ -17,7 +26,7 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-// 2. Alternar abas
+// 3. Alternar abas
 document.querySelectorAll(".tab").forEach((btn) => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".tab").forEach((b) => b.classList.remove("ativo"));
@@ -28,12 +37,11 @@ document.querySelectorAll(".tab").forEach((btn) => {
   });
 });
 
-// 3. LOGIN
+// 4. LOGIN
 document.getElementById("form-login").addEventListener("submit", async (e) => {
   e.preventDefault();
   const msg = document.getElementById("msg-login");
   const btn = document.getElementById("btn-login");
-  
   msg.textContent = "Entrando...";
   msg.className = "msg-auth";
   btn.disabled = true;
@@ -44,20 +52,18 @@ document.getElementById("form-login").addEventListener("submit", async (e) => {
       document.getElementById("login-email").value.trim(),
       document.getElementById("login-senha").value
     );
-    // O redirecionamento é automático pelo onAuthStateChanged
   } catch (err) {
     msg.textContent = traduzirErro(err.code);
     msg.className = "msg-auth erro";
-    btn.disabled = false; // Libera o botão novamente
+    btn.disabled = false;
   }
 });
 
-// 4. CADASTRO
+// 5. CADASTRO
 document.getElementById("form-cadastro").addEventListener("submit", async (e) => {
   e.preventDefault();
   const msg = document.getElementById("msg-cad");
   const btn = document.getElementById("btn-cad");
-  const email = document.getElementById("cad-email").value.trim();
   const s1 = document.getElementById("cad-senha").value;
   const s2 = document.getElementById("cad-senha2").value;
 
@@ -67,27 +73,23 @@ document.getElementById("form-cadastro").addEventListener("submit", async (e) =>
     return;
   }
 
-  if (s1.length < 6) {
-    msg.textContent = "A senha precisa ter no mínimo 6 caracteres.";
-    msg.className = "msg-auth erro";
-    return;
-  }
-
   msg.textContent = "Criando conta...";
   msg.className = "msg-auth";
   btn.disabled = true;
 
   try {
-    await createUserWithEmailAndPassword(auth, email, s1);
-    // O redirecionamento é automático pelo onAuthStateChanged
+    await createUserWithEmailAndPassword(
+      auth,
+      document.getElementById("cad-email").value.trim(),
+      s1
+    );
   } catch (err) {
     msg.textContent = traduzirErro(err.code);
     msg.className = "msg-auth erro";
-    btn.disabled = false; // Libera o botão novamente
+    btn.disabled = false;
   }
 });
 
-// 5. Tradutor de erros
 function traduzirErro(code) {
   const erros = {
     "auth/invalid-email": "O e-mail digitado é inválido.",
@@ -95,10 +97,7 @@ function traduzirErro(code) {
     "auth/wrong-password": "Senha incorreta.",
     "auth/invalid-credential": "E-mail ou senha incorretos.",
     "auth/email-already-in-use": "Este e-mail já está cadastrado.",
-    "auth/weak-password": "A senha precisa ter no mínimo 6 caracteres.",
-    "auth/operation-not-allowed": "Ative o login por E-mail/Senha no Firebase.",
-    "auth/configuration-not-found": "Ative o login por E-mail/Senha no Firebase.",
-    "auth/network-request-failed": "Falha de rede. Verifique sua internet."
+    "auth/weak-password": "A senha precisa ter no mínimo 6 caracteres."
   };
   return erros[code] || "Erro desconhecido: " + code;
 }
