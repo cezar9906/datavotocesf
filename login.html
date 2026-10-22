@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DataVotoCesf — Entrar</title>
+  <link rel="stylesheet" href="CSS/style.css" />
+</head>
+<body>
+  <header class="header">
+    <h1>DataVotoCesf</h1>
+    <p>Entre para acessar o painel de resultados</p>
+  </header>
+
+  <main class="container">
+    <div class="card auth-card">
+      <div class="tabs">
+        <button class="tab ativo" data-tab="login">Entrar</button>
+        <button class="tab" data-tab="cadastro">Cadastrar</button>
+      </div>
+
+      <form id="form-login" class="form-auth">
+        <label for="login-email">Email</label>
+        <input type="email" id="login-email" placeholder="seu@email.com" required />
+
+        <label for="login-senha">Senha</label>
+        <input type="password" id="login-senha" placeholder="••••••••" required />
+
+        <button type="submit" id="btn-login">Entrar</button>
+        <p class="msg-auth" id="msg-login" role="status"></p>
+      </form>
+
+      <form id="form-cadastro" class="form-auth" hidden>
+        <label for="cad-email">Email</label>
+        <input type="email" id="cad-email" placeholder="seu@email.com" required />
+
+        <label for="cad-senha">Senha (mín. 6 caracteres)</label>
+        <input type="password" id="cad-senha" placeholder="••••••••" minlength="6" required />
+
+        <label for="cad-senha2">Confirmar senha</label>
+        <input type="password" id="cad-senha2" placeholder="••••••••" minlength="6" required />
+
+        <button type="submit" id="btn-cadastrar">Criar conta</button>
+        <p class="msg-auth" id="msg-cad" role="status"></p>
+      </form>
+
+      <p class="link-voltar">
+        <a href="index.html">← Voltar para a pesquisa</a>
+      </p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>Projeto Integrado de Backend • Colégio Sagrada Família</p>
+  </footer>
+
+  <script type="module">
+    import { auth } from "./JS/firebase-config.js";
+    import { ehAdmin } from "./JS/auth.js";
+    import {
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
+
+    // Se já estiver logado, redireciona para o painel correto
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const admin = await ehAdmin(user);
+        window.location.href = admin ? "admin.html" : "user.html";
+      }
+    });
+
+    // Troca de abas
+    document.querySelectorAll(".tab").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach((b) => b.classList.remove("ativo"));
+        btn.classList.add("ativo");
+        const alvo = btn.dataset.tab;
+        document.getElementById("form-login").hidden = alvo !== "login";
+        document.getElementById("form-cadastro").hidden = alvo !== "cadastro";
+      });
+    });
+
+    // LOGIN
+    document.getElementById("form-login").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const msg = document.getElementById("msg-login");
+      const btn = document.getElementById("btn-login");
+      
+      msg.textContent = "Entrando...";
+      msg.className = "msg-auth";
+      btn.disabled = true;
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          document.getElementById("login-email").value.trim(),
+          document.getElementById("login-senha").value
+        );
+        const admin = await ehAdmin(userCredential.user);
+        window.location.href = admin ? "admin.html" : "user.html";
+      } catch (err) {
+        console.error("Erro no login:", err);
+        msg.textContent = traduzirErro(err.code);
+        msg.className = "msg-auth erro";
+        btn.disabled = false;
+      }
+    });
+
+    // CADASTRO
+    document.getElementById("form-cadastro").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const msg = document.getElementById("msg-cad");
+      const btn = document.getElementById("btn-cadastrar");
+      const s1 = document.getElementById("cad-senha").value;
+      const s2 = document.getElementById("cad-senha2").value;
+
+      if (s1 !== s2) {
+        msg.textContent = "As senhas não coincidem.";
+        msg.className = "msg-auth erro";
+        return;
+      }
+
+      msg.textContent = "Criando conta...";
+      msg.className = "msg-auth";
+      btn.disabled = true;
+
+      try {
+        await createUserWithEmailAndPassword(
+          auth,
+          document.getElementById("cad-email").value.trim(),
+          s1
+        );
+        window.location.href = "user.html";
+      } catch (err) {
+        console.error("Erro no cadastro:", err);
+        msg.textContent = traduzirErro(err.code);
+        msg.className = "msg-auth erro";
+        btn.disabled = false;
+      }
+    });
+
+    // Tradutor de erros do Firebase para português
+    function traduzirErro(code) {
+      const erros = {
+        "auth/invalid-email": "O e-mail digitado é inválido.",
+        "auth/user-not-found": "Usuário não encontrado. Verifique o e-mail.",
+        "auth/wrong-password": "Senha incorreta.",
+        "auth/invalid-credential": "E-mail ou senha incorretos.",
+        "auth/email-already-in-use": "Este e-mail já está cadastrado. Faça login.",
+        "auth/weak-password": "A senha é muito fraca. Use no mínimo 6 caracteres.",
+        "auth/operation-not-allowed": "O cadastro por e-mail não está ativado no Firebase (Avise o professor/Dev).",
+        "auth/too-many-requests": "Muitas tentativas falhas. Tente novamente em alguns minutos."
+      };
+      return erros[code] || "Erro desconhecido: " + code;
+    }
+  </script>
+</body>
+</html>

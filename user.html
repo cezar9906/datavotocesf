@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DataVotoCesf — Painel Admin</title>
+  <link rel="stylesheet" href="CSS/style.css" />
+</head>
+<body>
+  <header class="header">
+    <h1>Painel Administrativo 👑</h1>
+    <p>DataVotoCesf — Análise consolidada</p>
+    <div class="user-bar">
+      <span id="user-email">Carregando…</span>
+      <button id="btn-logout" class="btn-logout">Sair</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="painel" hidden>
+      <div class="acoes-admin">
+        <button id="btn-atualizar">🔄 Atualizar Dados</button>
+        <button id="btn-exportar">⬇️ Exportar CSV</button>
+      </div>
+
+      <div class="metricas">
+        <div class="card metrica">
+          <span class="metrica-label">Total de respostas</span>
+          <strong id="total-respostas">0</strong>
+        </div>
+        <div class="card metrica">
+          <span class="metrica-label">Média de moradores</span>
+          <strong id="media-moradores">0</strong>
+        </div>
+        <div class="card metrica">
+          <span class="metrica-label">Média de idade</span>
+          <strong id="media-idade">0</strong>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Intenção de Voto</h3>
+        <canvas id="grafico-votos"></canvas>
+      </div>
+      <div class="card">
+        <h3>Distribuição por Bairros</h3>
+        <canvas id="grafico-bairro"></canvas>
+      </div>
+      <div class="card">
+        <h3>Escolaridade</h3>
+        <canvas id="grafico-escolaridade"></canvas>
+      </div>
+      <div class="card">
+        <h3>Pautas Prioritárias</h3>
+        <canvas id="grafico-pautas"></canvas>
+      </div>
+      <div class="card">
+        <h3>Gênero</h3>
+        <canvas id="grafico-genero"></canvas>
+      </div>
+      <div class="card">
+        <h3>Faixa de Renda</h3>
+        <canvas id="grafico-renda"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Projeto Integrado de Backend • Colégio Sagrada Família</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script type="module" src="JS/admin.js"></script>
+</body>
+</html>
