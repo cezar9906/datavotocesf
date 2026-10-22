@@ -7,26 +7,25 @@ import {
   signOut
 } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
 
-// 1. LIMPEZA INICIAL: Remove sessões antigas para não dar conflito
+// Limpa sessão antiga
 signOut(auth).then(() => {
-  console.log("Sessão limpa para novo login.");
+  console.log("Sessão limpa.");
 });
 
-// 2. Redirecionamento seguro após login/cadastro
-onAuthStateChanged(auth, async (user) => {
+// Redirecionamento
+onAuthStateChanged(auth, (user) => {
   if (user) {
-    // Espera a verificação do admin terminar
-    const isAdmin = await ehAdmin(user);
-    
-    if (isAdmin) {
-      window.location.replace("admin.html");
-    } else {
-      window.location.replace("user.html");
-    }
+    setTimeout(() => {
+      if (ehAdmin(user)) {
+        window.location.replace("admin.html"); // Admin vai pro painel
+      } else {
+        window.location.replace("index.html"); // Usuário comum vai pra PESQUISA
+      }
+    }, 1500); // 1.5 segundos de espera
   }
 });
 
-// 3. Alternar abas
+// Alternar abas
 document.querySelectorAll(".tab").forEach((btn) => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".tab").forEach((b) => b.classList.remove("ativo"));
@@ -37,7 +36,7 @@ document.querySelectorAll(".tab").forEach((btn) => {
   });
 });
 
-// 4. LOGIN
+// LOGIN
 document.getElementById("form-login").addEventListener("submit", async (e) => {
   e.preventDefault();
   const msg = document.getElementById("msg-login");
@@ -59,7 +58,7 @@ document.getElementById("form-login").addEventListener("submit", async (e) => {
   }
 });
 
-// 5. CADASTRO
+// CADASTRO
 document.getElementById("form-cadastro").addEventListener("submit", async (e) => {
   e.preventDefault();
   const msg = document.getElementById("msg-cad");
@@ -92,12 +91,11 @@ document.getElementById("form-cadastro").addEventListener("submit", async (e) =>
 
 function traduzirErro(code) {
   const erros = {
-    "auth/invalid-email": "O e-mail digitado é inválido.",
-    "auth/user-not-found": "Usuário não encontrado.",
-    "auth/wrong-password": "Senha incorreta.",
-    "auth/invalid-credential": "E-mail ou senha incorretos.",
+    "auth/invalid-email": "E-mail inválido.",
     "auth/email-already-in-use": "Este e-mail já está cadastrado.",
-    "auth/weak-password": "A senha precisa ter no mínimo 6 caracteres."
+    "auth/weak-password": "A senha precisa ter 6 caracteres ou mais.",
+    "auth/wrong-password": "Senha incorreta.",
+    "auth/invalid-credential": "E-mail ou senha incorretos."
   };
-  return erros[code] || "Erro desconhecido: " + code;
+  return erros[code] || "Erro: " + code;
 }
